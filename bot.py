@@ -15,8 +15,7 @@ app = Flask(__name__)
 is_running = False
 last_message_id = None
 current_photo_id = None
-current_message_text = "⚠️ <b><a href="https://t.me/SINIRSIZPDF">⚠️⚠️TAŞINDIK⚠️⚠️⚠️ \nGÜNCEL KANALIMIZA
-\n👉KATILIN</a></b>"
+current_message_text = "<b><a href="https://t.me/SINIRSIZPDF">⚠️⚠️⚠️TAŞINDIK⚠️⚠️⚠️</a></b> /n<b><a href="https://t.me/SINIRSIZPDF">GÜNCEL KANALIMIZA</a></b> /n<b><a href="https://t.me/SINIRSIZPDF">👉KATILIN</a></b>"
 thread_lock = threading.Lock()
 
 @app.route('/')
