@@ -31,8 +31,8 @@ def send_update_to_channel():
             except Exception as e:
                 print(f"Eski mesaj silinemedi: {e}")
 
-        # Türkiye saati için UTC'ye 3 saat ekliyoruz
-current_time = (datetime.datetime.utcnow() + datetime.timedelta(hours=3)).strftime("%H:%M")
+        # Türkiye saati için UTC'ye 3 saat ekliyoruz (Girintiler tam hizalı)
+        current_time = (datetime.datetime.utcnow() + datetime.timedelta(hours=3)).strftime("%H:%M")
         dynamic_text = f"{current_message_text}\n\n⏱️ Güncelleme: {current_time}"
         
         if current_photo_id:
@@ -44,7 +44,6 @@ current_time = (datetime.datetime.utcnow() + datetime.timedelta(hours=3)).strfti
         print(f"[{current_time}] Kanalda mesaj güncellendi.")
     except Exception as e:
         print(f"❌ Gönderim hatası: {e}")
-
 def background_loop():
     global is_running
     while True:
