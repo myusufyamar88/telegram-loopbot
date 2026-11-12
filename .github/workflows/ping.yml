@@ -2,7 +2,7 @@ name: Keep Alive Ping
 
 on:
   schedule:
-    - cron: '*/10 * * * *'  # Her 10 dakikada bir otomatik çalışır
+    - cron: '*/6 * * * *'  # Her 6 dakikada bir otomatik çalışır
   workflow_dispatch: # Manuel test etmek için buton sağlar
 
 jobs:
