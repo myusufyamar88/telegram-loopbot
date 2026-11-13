@@ -6,7 +6,7 @@ import telebot
 from flask import Flask
 
 # --- AYARLAR ---
-TOKEN = os.environ.get("BOT_TOKEN", "9257963202:AAFAiul9eBWtYbOj8-uUQ9sZ2apkJObbvRM")
+TOKEN = os.environ.get("BOT_TOKEN", "9032286572:AAEef58DDLIwDYDeHpHfFtdyQCsX2tpU6Jc")
 CHANNEL_ID = os.environ.get("CHANNEL_ID", "@SINIRSIZPDF2")
 
 bot = telebot.TeleBot(TOKEN)
