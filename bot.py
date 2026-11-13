@@ -86,11 +86,18 @@ def stop_command(message):
         is_running = False
     bot.reply_to(message, "🛑 Otomatik döngü durduruldu.")
 
+# Botu arka planda dinlemeye başla
 def run_bot():
+    try:
+        bot.remove_webhook()  # Takılı kalan eski bağlantıları temizler
+    except Exception as e:
+        print(f"Webhook temizleme hatası: {e}")
+    
     bot.infinity_polling(skip_pending=True)
 
 bot_thread = threading.Thread(target=run_bot, daemon=True)
 bot_thread.start()
+
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
