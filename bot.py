@@ -84,14 +84,14 @@ def start_command(message):
 # Güvenli Polling Başlatıcı (409 çakışmalarını önlemek için webhook'u sıfırlar)
 def start_bot_polling():
     try:
-        bot.remove_webhook()  # Eski takılı kalan webhook/session bağlantılarını temizler
+        bot.remove_webhook()  # Eski takılı kalan webhook bağlantılarını temizler
         time.sleep(1)
         bot.infinity_polling(skip_pending=True)
     except Exception as e:
         print(f"Polling hatası: {e}")
 
-# Flask uygulamasını, arka plan döngüsünü ve Telegram Dinleyicisini Başlatma
-if __main__ == '__main__':
+# Flask uygulamasını, arka plan döngüsünü ve Telegram Dinleyicisini Başlatma (DÜZELTİLDİ)
+if __name__ == '__main__':
     t = threading.Thread(target=background_loop, daemon=True)
     t.start()
     
