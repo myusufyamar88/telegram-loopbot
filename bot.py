@@ -17,7 +17,7 @@ app = Flask(__name__)
 
 # Durum Değişkenleri
 is_running = False
-current_message_text = "/dehh SINIRSIZPDF2735 ⚡️⚡️⚡️⚡️⚡️⚡️⚡️⚡️⚡️⚡️⚡️
+current_message_text = "⚡️⚡️⚡️⚡️⚡️⚡️⚡️⚡️⚡️⚡️⚡️
 
 <b><a href="https://t.me/SINIRSIZPDF">      TAŞINDIK
 
