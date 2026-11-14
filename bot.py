@@ -6,10 +6,10 @@ from flask import Flask
 
 # 1. TEMEL AYARLAR
 TOKEN = os.environ.get("BOT_TOKEN", "9032286572:AAH4-z-92Dx-gr1LX0Ka5Q4HelpoQJsDMUU")
-CHANNEL_ID = "@SINIRSIZPDF2"  # Kanalın sayısal ID'si
+CHANNEL_ID = "@SINIRSIZPDF2"  # Hedef kanalınız
 
-# Güvenlik ve Yetkilendirme Ayarları
-BENIM_TELEGRAM_ID = "@xczvyt"
+# Güvenlik ve Yetkilendirme Ayarları (ID sayısal olmalıdır!)
+BENIM_TELEGRAM_ID = 6787610448  
 GIZLI_SIFRE = "SINIRSIZPDF2735"
 
 bot = telebot.TeleBot(TOKEN)
@@ -19,11 +19,11 @@ app = Flask(__name__)
 is_running = False
 current_message_text = """⚡️⚡️⚡️⚡️⚡️⚡️⚡️⚡️⚡️⚡️⚡️
 
-<b><a href="https://t.me/SINIRSIZPDF">       TAŞINDIK
+<b><a href="https://t.me/SINIRSIZPDF">        TAŞINDIK
 
 GÜNCEL KANALIMIZA
 
-     KATILIN</a></b>
+      KATILIN</a></b>
 
 👇👇👇👇👇👇👇👇👇👇👇
 
@@ -51,7 +51,7 @@ def background_loop():
                 if photo_id:
                     bot.send_photo(CHANNEL_ID, photo_id, caption=msg_text, parse_mode='HTML')
                 else:
-                    bot.send_message(CHANNEL_ID, msg_text, parse_mode='HTML')
+                    bot.send_message(CHANNEL_ID, msg_text, parse_mode='HTML', disable_web_page_preview=True)
                 print("✅ Kanala periyodik mesaj başarıyla gönderildi.")
             except Exception as e:
                 print(f"❌ Kanala gönderim hatası: {e}")
@@ -59,7 +59,7 @@ def background_loop():
         # Gönderim aralığı (300 saniye = 5 dakika)
         time.sleep(300)
 
-# Güvenlik Kontrollü /baslat Komutu
+# Güvenlik Kontrollü /dehh Komutu (Başlatma)
 @bot.message_handler(
     content_types=['text', 'photo'],
     func=lambda m: (m.text and m.text.startswith('/dehh')) or (m.caption and m.caption.startswith('/dehh'))
@@ -72,6 +72,7 @@ def start_command(message):
     user_id = message.from_user.id
     full_text = message.caption if message.caption else message.text
     
+    # Yetki Kontrolü (Sayısal ID Eşleşmesi)
     if user_id == BENIM_TELEGRAM_ID:
         yetki_onayli = True
     else:
@@ -83,7 +84,7 @@ def start_command(message):
 
     if not yetki_onayli:
         if full_text.strip() == '/dehh':
-            bot.send_message(message.chat.id, "🔒 Bu botu çalıştırmak için parola gerekiyor.\nKullanım: `/komut parolaniz`")
+            bot.send_message(message.chat.id, "🔒 Bu botu çalıştırmak için parola gerekiyor.\nKullanım: `/dehh parolaniz`")
         else:
             bot.send_message(message.chat.id, "❌ Hatalı parola! Yetkisiz kullanım.")
         return
@@ -94,21 +95,21 @@ def start_command(message):
     with thread_lock:
         is_running = True
     
-    # Bize DM'den onay mesajı gönder
+    # DM'den onay mesajı gönder
     bot.send_message(message.chat.id, "✅ Yetki onaylandı! Bot başlatıldı ve kanala ilk mesaj gönderiliyor...")
 
-    # ANINDA KANALA GÖNDERME TESTİ (5 dakika beklemeden hemen dener)
+    # ANINDA KANALA GÖNDERME TESTİ
     try:
         if current_photo_id:
             bot.send_photo(CHANNEL_ID, current_photo_id, caption=current_message_text, parse_mode='HTML')
         else:
-            bot.send_message(CHANNEL_ID, current_message_text, parse_mode='HTML')
+            bot.send_message(CHANNEL_ID, current_message_text, parse_mode='HTML', disable_web_page_preview=True)
         print("✅ Kanala ilk test mesajı başarıyla iletildi!")
     except Exception as e:
         print(f"❌ Kanala ilk test mesajı gönderilemedi! Hata: {e}")
         bot.send_message(message.chat.id, f"⚠️ Bot başlatıldı ancak kanala mesaj atılamadı!\nHata: {e}")
 
-# Güvenlik Kontrollü /durdur Komutu (YENİ EKLENECEK KISIM)
+# Güvenlik Kontrollü /ooha Komutu (Durdurma)
 @bot.message_handler(
     func=lambda m: m.text and m.text.startswith('/ooha')
 )
@@ -116,13 +117,14 @@ def stop_command(message):
     global is_running
     user_id = message.from_user.id
     
-    # Sadece sizin ID'niz veya şifre ile durdurulabilmesi için yetki kontrolü
     if user_id == BENIM_TELEGRAM_ID:
         with thread_lock:
             is_running = False
         bot.send_message(message.chat.id, "🛑 Bot durduruldu! Kanala otomatik gönderimler durduruldu.")
     else:
-        bot.send_message(message.chat.id, "❌ Bu komutu kullanmaya yetkiniz yok.")# Güvenli Polling Başlatıcı
+        bot.send_message(message.chat.id, "❌ Bu komutu kullanmaya yetkiniz yok.")
+
+# Güvenli Polling Başlatıcı
 def start_bot_polling():
     try:
         bot.remove_webhook()
