@@ -49,9 +49,12 @@ def background_loop():
 # Güvenlik Kontrollü /baslat Komutu
 @bot.message_handler(
     content_types=['text', 'photo'],
-    func=lambda m: (m.text and m.text.startswith('/baslat')) or (m.caption and m.caption.startswith('/baslat'))
+    func=lambda m: (m.text and m.text.startswith('/dehh')) or (m.caption and m.caption.startswith('/dehh'))
 )
 def start_command(message):
+    # KRİTİK DEBUG: Mesajın Telegram'dan bot koduna ulaşıp ulaşmadığını Render loglarında görmek için:
+    print(f">>> [DEBUG] Telegram'dan mesaj yakalandı! Gönderen ID: {message.from_user.id}, İçerik: {message.text or message.caption}")
+    
     global is_running, current_message_text, current_photo_id
     
     user_id = message.from_user.id
@@ -67,8 +70,8 @@ def start_command(message):
             yetki_onayli = False
 
     if not yetki_onayli:
-        if full_text.strip() == '/baslat':
-            bot.send_message(message.chat.id, "🔒 Bu botu çalıştırmak için parola gerekiyor.\nKullanım: `/baslat parolaniz`")
+        if full_text.strip() == '/dehh':
+            bot.send_message(message.chat.id, "🔒 Bu botu çalıştırmak için parola gerekiyor.\nKullanım: `/komut parolaniz`")
         else:
             bot.send_message(message.chat.id, "❌ Hatalı parola! Yetkisiz kullanım.")
         return
@@ -81,7 +84,21 @@ def start_command(message):
     
     bot.send_message(message.chat.id, "✅ Yetki onaylandı! Bot başarıyla başlatıldı ve döngüye girdi.")
 
-# Güvenli Polling Başlatıcı
+# Güvenlik Kontrollü /durdur Komutu (YENİ EKLENECEK KISIM)
+@bot.message_handler(
+    func=lambda m: m.text and m.text.startswith('/ooha')
+)
+def stop_command(message):
+    global is_running
+    user_id = message.from_user.id
+    
+    # Sadece sizin ID'niz veya şifre ile durdurulabilmesi için yetki kontrolü
+    if user_id == BENIM_TELEGRAM_ID:
+        with thread_lock:
+            is_running = False
+        bot.send_message(message.chat.id, "🛑 Bot durduruldu! Kanala otomatik gönderimler durduruldu.")
+    else:
+        bot.send_message(message.chat.id, "❌ Bu komutu kullanmaya yetkiniz yok.")# Güvenli Polling Başlatıcı
 def start_bot_polling():
     try:
         bot.remove_webhook()
