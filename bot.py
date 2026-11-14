@@ -68,9 +68,9 @@ def start_command(message):
 
     if not yetki_onayli:
         if full_text.strip() == '/baslat':
-            bot.reply_to(message, "🔒 Bu botu çalıştırmak için parola gerekiyor.\nKullanım: `/baslat parolaniz`")
+            bot.send_message(message.chat.id, "🔒 Bu botu çalıştırmak için parola gerekiyor.\nKullanım: `/baslat parolaniz`")
         else:
-            bot.reply_to(message, "❌ Hatalı parola! Yetkisiz kullanım.")
+            bot.send_message(message.chat.id, "❌ Hatalı parola! Yetkisiz kullanım.")
         return
 
     if message.photo:
@@ -79,18 +79,18 @@ def start_command(message):
     with thread_lock:
         is_running = True
     
-    bot.reply_to(message, "✅ Yetki onaylandı! Bot başarıyla başlatıldı ve döngüye girdi.")
+    bot.send_message(message.chat.id, "✅ Yetki onaylandı! Bot başarıyla başlatıldı ve döngüye girdi.")
 
-# Güvenli Polling Başlatıcı (409 çakışmalarını önlemek için webhook'u sıfırlar)
+# Güvenli Polling Başlatıcı
 def start_bot_polling():
     try:
-        bot.remove_webhook()  # Eski takılı kalan webhook bağlantılarını temizler
+        bot.remove_webhook()
         time.sleep(1)
         bot.infinity_polling(skip_pending=True)
     except Exception as e:
         print(f"Polling hatası: {e}")
 
-# Flask uygulamasını, arka plan döngüsünü ve Telegram Dinleyicisini Başlatma (DÜZELTİLDİ)
+# Flask uygulamasını, arka plan döngüsünü ve Telegram Dinleyicisini Başlatma
 if __name__ == '__main__':
     t = threading.Thread(target=background_loop, daemon=True)
     t.start()
