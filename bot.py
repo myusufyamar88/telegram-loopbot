@@ -45,7 +45,7 @@ def background_loop():
                 print(f"Gönderim hatası: {e}")
         
         # Gönderim aralığı (300 saniye = 5 dakika)
-        time.sleep(300)
+        time.sleep(600)
 
 # Güvenlik Kontrollü /baslat Komutu
 @bot.message_handler(
