@@ -18,7 +18,7 @@ app = Flask(__name__)
 # Durum Değişkenleri
 is_running = False
 current_message_text = "/baslat TAŞINDIK : @SINIRSIZPDF"
-current_photo_id = 41769
+current_photo_id = None
 thread_lock = threading.Lock()
 
 # Render'ı uykudan (keep-alive) tutmak için web sunucusu endpoint'i
