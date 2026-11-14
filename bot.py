@@ -18,7 +18,7 @@ app = Flask(__name__)
 # Durum Değişkenleri
 is_running = False
 current_message_text = "TAŞINDIK : @SINIRSIZPDF"
-current_photo_id = None  # Başlangıçta boş, bota resim attığınızda otomatik dolacak
+current_photo_id = None
 thread_lock = threading.Lock()
 
 # Render'ı uykudan (keep-alive) tutmak için web sunucusu endpoint'i
@@ -44,8 +44,7 @@ def background_loop():
             except Exception as e:
                 print(f"Gönderim hatası: {e}")
         
-        # Gönderim aralığı (300 saniye = 5 dakika)
-        time.sleep(600)
+        time.sleep(300)
 
 # Güvenlik Kontrollü /baslat Komutu
 @bot.message_handler(
@@ -58,7 +57,6 @@ def start_command(message):
     user_id = message.from_user.id
     full_text = message.caption if message.caption else message.text
     
-    # Yetki Kontrolü
     if user_id == BENIM_TELEGRAM_ID:
         yetki_onayli = True
     else:
@@ -75,26 +73,29 @@ def start_command(message):
             bot.reply_to(message, "❌ Hatalı parola! Yetkisiz kullanım.")
         return
 
-    # Fotoğraf varsa file_id'sini kaydet
     if message.photo:
         current_photo_id = message.photo[-1].file_id
-
-    # Eğer metin gönderildiyse güncelle
-    parts = full_text.split(maxsplit=1)
-    if len(parts) > 1 and user_id == BENIM_TELEGRAM_ID:
-        pass
 
     with thread_lock:
         is_running = True
     
     bot.reply_to(message, "✅ Yetki onaylandı! Bot başarıyla başlatıldı ve döngüye girdi.")
 
+# Güvenli Polling Başlatıcı (409 çakışmalarını önlemek için webhook'u sıfırlar)
+def start_bot_polling():
+    try:
+        bot.remove_webhook()  # Eski takılı kalan webhook/session bağlantılarını temizler
+        time.sleep(1)
+        bot.infinity_polling(skip_pending=True)
+    except Exception as e:
+        print(f"Polling hatası: {e}")
+
 # Flask uygulamasını, arka plan döngüsünü ve Telegram Dinleyicisini Başlatma
-if __name__ == '__main__':
+if __main__ == '__main__':
     t = threading.Thread(target=background_loop, daemon=True)
     t.start()
     
-    polling_thread = threading.Thread(target=bot.infinity_polling, kwargs={'skip_pending': True}, daemon=True)
+    polling_thread = threading.Thread(target=start_bot_polling, daemon=True)
     polling_thread.start()
     
     port = int(os.environ.get("PORT", 5000))
