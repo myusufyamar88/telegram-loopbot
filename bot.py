@@ -6,7 +6,7 @@ from flask import Flask
 
 # 1. TEMEL AYARLAR
 TOKEN = os.environ.get("BOT_TOKEN", "9032286572:AAEef58DDLIwDYDeHpHfFtdyQCsX2tpU6Jc")
-CHANNEL_ID = "@SINIRSIZPDF2"
+CHANNEL_ID = 1891277095
 
 # Güvenlik ve Yetkilendirme Ayarları
 BENIM_TELEGRAM_ID = 6787610448
@@ -17,8 +17,18 @@ app = Flask(__name__)
 
 # Durum Değişkenleri
 is_running = False
-current_message_text = "Varsayılan Mesaj Metniniz"
-current_photo_id = None
+current_message_text = "/baslat ⚡️⚡️⚡️⚡️⚡️⚡️⚡️⚡️⚡️
+ 
+<b><a href="https://t.me/SINIRSIZPDF">    T A Ş I N D I K
+
+GÜNCEL KANALIMIZA
+
+            KATILIN</a></b>
+
+👇 👇 👇 👇 👇 👇 👇 👇
+
+https://t.me/SINIRSIZPDF"
+current_photo_id = 41769
 thread_lock = threading.Lock()
 
 # Render'ı uykudan (keep-alive) tutmak için web sunucusu endpoint'i
