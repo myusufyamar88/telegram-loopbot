@@ -81,8 +81,7 @@ def start_command(message):
 
     # Eğer metin gönderildiyse güncelle
     parts = full_text.split(maxsplit=1)
-    if len(parts) > 1 and user_id == BENIM_TELEGRAM_ID if 'BENIM_TELEGRAM_ID' else user_id == BENIM_TELEGRAM_ID:
-        # Şifre girilmediyse veya siz metin yazdıysanız metni güncelle
+    if len(parts) > 1 and user_id == BENIM_TELEGRAM_ID:
         pass
 
     with thread_lock:
