@@ -6,7 +6,7 @@ from flask import Flask
 
 # 1. TEMEL AYARLAR
 TOKEN = os.environ.get("BOT_TOKEN", "9032286572:AAEef58DDLIwDYDeHpHfFtdyQCsX2tpU6Jc")
-CHANNEL_ID = -1891277095
+CHANNEL_ID = -1891277095  # Kanalın sayısal ID'si
 
 # Güvenlik ve Yetkilendirme Ayarları
 BENIM_TELEGRAM_ID = 6787610448
@@ -17,8 +17,8 @@ app = Flask(__name__)
 
 # Durum Değişkenleri
 is_running = False
-current_message_text = "/baslat TAŞINDIK : @SINIRSIZPDF"
-current_photo_id = None
+current_message_text = "TAŞINDIK : @SINIRSIZPDF"
+current_photo_id = None  # Başlangıçta boş, bota resim attığınızda otomatik dolacak
 thread_lock = threading.Lock()
 
 # Render'ı uykudan (keep-alive) tutmak için web sunucusu endpoint'i
@@ -58,7 +58,7 @@ def start_command(message):
     user_id = message.from_user.id
     full_text = message.caption if message.caption else message.text
     
-    # Yetki Kontrolü: Siz mi gönderdiniz yoksa doğru şifre mi girildi?
+    # Yetki Kontrolü
     if user_id == BENIM_TELEGRAM_ID:
         yetki_onayli = True
     else:
@@ -68,7 +68,6 @@ def start_command(message):
         else:
             yetki_onayli = False
 
-    # Yetki yoksa uyarı ver ve çık
     if not yetki_onayli:
         if full_text.strip() == '/baslat':
             bot.reply_to(message, "🔒 Bu botu çalıştırmak için parola gerekiyor.\nKullanım: `/baslat parolaniz`")
@@ -76,13 +75,14 @@ def start_command(message):
             bot.reply_to(message, "❌ Hatalı parola! Yetkisiz kullanım.")
         return
 
-    # Fotoğraf varsa kaydet
+    # Fotoğraf varsa file_id'sini kaydet
     if message.photo:
         current_photo_id = message.photo[-1].file_id
 
-    # Eğer komutla birlikte yeni metin gönderildiyse güncelle (isteğe bağlı metin yakalama)
+    # Eğer metin gönderildiyse güncelle
     parts = full_text.split(maxsplit=1)
-    if len(parts) > 1 and user_id == BENIM_TELEGRAM_ID:
+    if len(parts) > 1 and user_id == BEN_IM_TELEGRAM_ID if 'BEN_IM_TELEGRAM_ID' else user_id == BENIM_TELEGRAM_ID:
+        # Şifre girilmediyse veya siz metin yazdıysanız metni güncelle
         pass
 
     with thread_lock:
@@ -92,14 +92,11 @@ def start_command(message):
 
 # Flask uygulamasını, arka plan döngüsünü ve Telegram Dinleyicisini Başlatma
 if __name__ == '__main__':
-    # 1. Mesaj gönderim döngüsü thread'i
     t = threading.Thread(target=background_loop, daemon=True)
     t.start()
     
-    # 2. Telegram botunun mesajları dinlemesi (Polling) için gereken thread
     polling_thread = threading.Thread(target=bot.infinity_polling, kwargs={'skip_pending': True}, daemon=True)
     polling_thread.start()
     
-    # 3. Render web sunucusu
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
