@@ -17,17 +17,7 @@ app = Flask(__name__)
 
 # Durum Değişkenleri
 is_running = False
-current_message_text = "/baslat ⚡️⚡️⚡️⚡️⚡️⚡️⚡️⚡️⚡️
- 
-<b><a href="https://t.me/SINIRSIZPDF">    T A Ş I N D I K
-
-GÜNCEL KANALIMIZA
-
-            KATILIN</a></b>
-
-👇 👇 👇 👇 👇 👇 👇 👇
-
-https://t.me/SINIRSIZPDF"
+current_message_text = "/baslat TAŞINDIK : @SINIRSIZPDF"
 current_photo_id = 41769
 thread_lock = threading.Lock()
 
