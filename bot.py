@@ -5,7 +5,7 @@ import telebot
 from flask import Flask
 
 # 1. TEMEL AYARLAR
-TOKEN = os.environ.get("BOT_TOKEN", "9032286572:AAEef58DDLIwDYDeHpHfFtdyQCsX2tpU6Jc")
+TOKEN = os.environ.get("BOT_TOKEN", "9032286572:AAH4-z-92Dx-gr1LX0Ka5Q4HelpoQJsDMUU")
 CHANNEL_ID = "@SINIRSIZPDF2"  # Kanalın sayısal ID'si
 
 # Güvenlik ve Yetkilendirme Ayarları
