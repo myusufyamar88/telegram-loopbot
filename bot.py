@@ -6,10 +6,10 @@ from flask import Flask
 
 # 1. TEMEL AYARLAR
 TOKEN = os.environ.get("BOT_TOKEN", "9032286572:AAEef58DDLIwDYDeHpHfFtdyQCsX2tpU6Jc")
-CHANNEL_ID = -1891277095  # Kanalın sayısal ID'si
+CHANNEL_ID = "@SINIRSIZPDF2"  # Kanalın sayısal ID'si
 
 # Güvenlik ve Yetkilendirme Ayarları
-BENIM_TELEGRAM_ID = 6787610448
+BENIM_TELEGRAM_ID = "@xczvyt"
 GIZLI_SIFRE = "SINIRSIZPDF2735"
 
 bot = telebot.TeleBot(TOKEN)
@@ -17,7 +17,7 @@ app = Flask(__name__)
 
 # Durum Değişkenleri
 is_running = False
-current_message_text = "TAŞINDIK : @SINIRSIZPDF"
+current_message_text = "GÜNCEL ADRESİMİZE KATILIN : @SINIRSIZPDF"
 current_photo_id = None
 thread_lock = threading.Lock()
 
