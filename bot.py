@@ -17,7 +17,17 @@ app = Flask(__name__)
 
 # Durum Değişkenleri
 is_running = False
-current_message_text = "GÜNCEL ADRESİMİZE KATILIN : @SINIRSIZPDF"
+current_message_text = "/dehh SINIRSIZPDF2735 ⚡️⚡️⚡️⚡️⚡️⚡️⚡️⚡️⚡️⚡️⚡️
+
+<b><a href="https://t.me/SINIRSIZPDF">      TAŞINDIK
+
+GÜNCEL KANALIMIZA
+
+      KATILIN</a></b>
+
+👇👇👇👇👇👇👇👇👇👇
+
+https://t.me/SINIRSIZPDF"
 current_photo_id = None
 thread_lock = threading.Lock()
 
