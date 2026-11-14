@@ -4,13 +4,13 @@ import time
 import telebot
 from flask import Flask
 
-# 1. TEMEL AYARLAR (Buradaki bilgileri kendinize göre güncelleyin)
+# 1. TEMEL AYARLAR
 TOKEN = os.environ.get("BOT_TOKEN", "9032286572:AAEef58DDLIwDYDeHpHfFtdyQCsX2tpU6Jc")
-CHANNEL_ID = "@SINIRSIZPDF2"  # Örn: @benimkanalim
+CHANNEL_ID = "@SINIRSIZPDF2"
 
 # Güvenlik ve Yetkilendirme Ayarları
-BENIM_TELEGRAM_ID = 6787610448  # Kendi sayısal Telegram ID'niz
-GIZLI_SIFRE = "SINIRSIZPDF2735"  # Başkalarının bilmediği bir şifre belirleyin
+BENIM_TELEGRAM_ID = 6787610448
+GIZLI_SIFRE = "SINIRSIZPDF2735"
 
 bot = telebot.TeleBot(TOKEN)
 app = Flask(__name__)
@@ -44,7 +44,7 @@ def background_loop():
             except Exception as e:
                 print(f"Gönderim hatası: {e}")
         
-        # Gönderim aralığı (Örn: 300 saniye = 5 dakika)
+        # Gönderim aralığı (300 saniye = 5 dakika)
         time.sleep(300)
 
 # Güvenlik Kontrollü /baslat Komutu
@@ -80,10 +80,9 @@ def start_command(message):
     if message.photo:
         current_photo_id = message.photo[-1].file_id
 
-    # Eğer komutla birlikte yeni metin gönderildiyse güncelle
+    # Eğer komutla birlikte yeni metin gönderildiyse güncelle (isteğe bağlı metin yakalama)
     parts = full_text.split(maxsplit=1)
     if len(parts) > 1 and user_id == BENIM_TELEGRAM_ID:
-        # Şifre veya ek metin kısmını ayıkla (isteğe bağlı metin güncelleme)
         pass
 
     with thread_lock:
@@ -91,11 +90,16 @@ def start_command(message):
     
     bot.reply_to(message, "✅ Yetki onaylandı! Bot başarıyla başlatıldı ve döngüye girdi.")
 
-# Flask uygulamasını ve arka plan döngüsünü başlatma
+# Flask uygulamasını, arka plan döngüsünü ve Telegram Dinleyicisini Başlatma
 if __name__ == '__main__':
+    # 1. Mesaj gönderim döngüsü thread'i
     t = threading.Thread(target=background_loop, daemon=True)
     t.start()
     
-    # Render'ın verdiği port üzerinden web sunucusunu ayağa kaldırır
+    # 2. Telegram botunun mesajları dinlemesi (Polling) için gereken thread
+    polling_thread = threading.Thread(target=bot.infinity_polling, kwargs={'skip_pending': True}, daemon=True)
+    polling_thread.start()
+    
+    # 3. Render web sunucusu
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
