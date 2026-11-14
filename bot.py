@@ -65,10 +65,7 @@ t.start()
 BENIM_TELEGRAM_ID = 6787610448  
 GIZLI_SIFRE = "SINIRSIZPDF2735"  # İstediğiniz bir şifre belirleyin
 
-@bot.message_handler(
-    content_types=['text', 'photo'],
-    func=lambda m: (m.text and m.text.startswith('/baslat')) or (m.caption and m.caption.startswith('/baslat'))
-)
+@bot.message_handler(content_types=['text', 'photo'], func=lambda m: (m.text and m.text.startswith('/baslat')) or (m.caption and m.caption.startswith('/baslat')))
 def start_command(message):
     global is_running, current_message_text, current_photo_id
     
