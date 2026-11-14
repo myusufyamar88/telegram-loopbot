@@ -17,17 +17,18 @@ app = Flask(__name__)
 
 # Durum Değişkenleri
 is_running = False
-current_message_text = "⚡️⚡️⚡️⚡️⚡️⚡️⚡️⚡️⚡️⚡️⚡️
+current_message_text = """⚡️⚡️⚡️⚡️⚡️⚡️⚡️⚡️⚡️⚡️⚡️
 
-<b><a href="https://t.me/SINIRSIZPDF">      TAŞINDIK
+<b><a href="https://t.me/SINIRSIZPDF">       TAŞINDIK
 
 GÜNCEL KANALIMIZA
 
-      KATILIN</a></b>
+     KATILIN</a></b>
 
-👇👇👇👇👇👇👇👇👇👇
+👇👇👇👇👇👇👇👇👇👇👇
 
-https://t.me/SINIRSIZPDF"
+https://t.me/SINIRSIZPDF"""
+
 current_photo_id = None
 thread_lock = threading.Lock()
 
