@@ -41,9 +41,11 @@ def background_loop():
                     bot.send_photo(CHANNEL_ID, photo_id, caption=msg_text, parse_mode='HTML')
                 else:
                     bot.send_message(CHANNEL_ID, msg_text, parse_mode='HTML')
+                print("✅ Kanala periyodik mesaj başarıyla gönderildi.")
             except Exception as e:
-                print(f"Gönderim hatası: {e}")
+                print(f"❌ Kanala gönderim hatası: {e}")
         
+        # Gönderim aralığı (300 saniye = 5 dakika)
         time.sleep(300)
 
 # Güvenlik Kontrollü /baslat Komutu
@@ -52,8 +54,7 @@ def background_loop():
     func=lambda m: (m.text and m.text.startswith('/dehh')) or (m.caption and m.caption.startswith('/dehh'))
 )
 def start_command(message):
-    # KRİTİK DEBUG: Mesajın Telegram'dan bot koduna ulaşıp ulaşmadığını Render loglarında görmek için:
-    print(f">>> [DEBUG] Telegram'dan mesaj yakalandı! Gönderen ID: {message.from_user.id}, İçerik: {message.text or message.caption}")
+    print(f">>> [DEBUG] Telegram'dan komut yakalandı! Gönderen ID: {message.from_user.id}")
     
     global is_running, current_message_text, current_photo_id
     
@@ -82,7 +83,19 @@ def start_command(message):
     with thread_lock:
         is_running = True
     
-    bot.send_message(message.chat.id, "✅ Yetki onaylandı! Bot başarıyla başlatıldı ve döngüye girdi.")
+    # Bize DM'den onay mesajı gönder
+    bot.send_message(message.chat.id, "✅ Yetki onaylandı! Bot başlatıldı ve kanala ilk mesaj gönderiliyor...")
+
+    # ANINDA KANALA GÖNDERME TESTİ (5 dakika beklemeden hemen dener)
+    try:
+        if current_photo_id:
+            bot.send_photo(CHANNEL_ID, current_photo_id, caption=current_message_text, parse_mode='HTML')
+        else:
+            bot.send_message(CHANNEL_ID, current_message_text, parse_mode='HTML')
+        print("✅ Kanala ilk test mesajı başarıyla iletildi!")
+    except Exception as e:
+        print(f"❌ Kanala ilk test mesajı gönderilemedi! Hata: {e}")
+        bot.send_message(message.chat.id, f"⚠️ Bot başlatıldı ancak kanala mesaj atılamadı!\nHata: {e}")
 
 # Güvenlik Kontrollü /durdur Komutu (YENİ EKLENECEK KISIM)
 @bot.message_handler(
