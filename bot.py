@@ -6,7 +6,7 @@ from flask import Flask
 
 # 1. TEMEL AYARLAR
 TOKEN = os.environ.get("BOT_TOKEN", "9032286572:AAEef58DDLIwDYDeHpHfFtdyQCsX2tpU6Jc")
-CHANNEL_ID = 1891277095
+CHANNEL_ID = -1891277095
 
 # Güvenlik ve Yetkilendirme Ayarları
 BENIM_TELEGRAM_ID = 6787610448
