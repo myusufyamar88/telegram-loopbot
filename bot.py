@@ -59,7 +59,7 @@ def background_loop():
         # Gönderim aralığı (300 saniye = 5 dakika)
         time.sleep(300)
 
-# Güvenlik Kontrollü /dehh Komutu (Başlatma)
+# Güvenlik Kontrollü /dehh Komutu (Başlatma ve Metin Güncelleme)
 @bot.message_handler(
     content_types=['text', 'photo'],
     func=lambda m: (m.text and m.text.startswith('/dehh')) or (m.caption and m.caption.startswith('/dehh'))
@@ -84,19 +84,39 @@ def start_command(message):
 
     if not yetki_onayli:
         if full_text.strip() == '/dehh':
-            bot.send_message(message.chat.id, "🔒 Bu botu çalıştırmak için parola gerekiyor.\nKullanım: `/dehh parolaniz`")
+            bot.send_message(message.chat.id, "🔒 Bu botu çalıştırmak için parola gerekiyor.\nKullanım: `/dehh parolaniz mesajiniz`")
         else:
             bot.send_message(message.chat.id, "❌ Hatalı parola! Yetkisiz kullanım.")
         return
 
+    # Fotoğraf varsa file_id'sini kaydet
     if message.photo:
         current_photo_id = message.photo[-1].file_id
+
+    # 📌 YENİ METNİ YAKALAMA VE GÜNCELLEME KISMI
+    # Gönderilen metinden /dehh komutunu ve şifreyi ayıklayıp geriye kalan tasarımı/metni alıyoruz
+    parts = full_text.split(maxsplit=2)  # Örn: ['/dehh', 'SINIRSIZPDF2735', 'Mesajınız...']
+    
+    if user_id == BENIM_TELEGRAM_ID:
+        # Eğer yetkili sizseniz ve şifresiz direkt metin yazdıysanız (/dehh metin...)
+        if len(parts) > 1:
+            # Komuttan sonrasını al
+            clean_text = full_text.replace(parts[0], "", 1).strip()
+            if clean_text:
+                current_message_text = clean_text
+    else:
+        # Eğer şifre ile gönderildiyse (/dehh SINIRSIZPDF2735 metin...)
+        if len(parts) > 2:
+            # Şifreden sonrasını al
+            clean_text = full_text.replace(parts[0], "", 1).replace(parts[1], "", 1).strip()
+            if clean_text:
+                current_message_text = clean_text
 
     with thread_lock:
         is_running = True
     
     # DM'den onay mesajı gönder
-    bot.send_message(message.chat.id, "✅ Yetki onaylandı! Bot başlatıldı ve kanala ilk mesaj gönderiliyor...")
+    bot.send_message(message.chat.id, "✅ Yetki onaylandı! Yeni metin hafızaya alındı, bot başlatıldı ve kanala gönderiliyor...")
 
     # ANINDA KANALA GÖNDERME TESTİ
     try:
@@ -122,7 +142,7 @@ def stop_command(message):
             is_running = False
         bot.send_message(message.chat.id, "🛑 Bot durduruldu! Kanala otomatik gönderimler durduruldu.")
     else:
-        bot.send_message(message.chat.id, "❌ Bu komutu kullanmaya yetkiniz yok.")
+        bot.send_message(message.chat.id, "❌ Eşleşmeyen ID, yetkiniz yok.")
 
 # Güvenli Polling Başlatıcı
 def start_bot_polling():
