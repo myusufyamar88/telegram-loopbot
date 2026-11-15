@@ -8,7 +8,7 @@ from flask import Flask
 TOKEN = os.environ.get("BOT_TOKEN", "9032286572:AAH4-z-92Dx-gr1LX0Ka5Q4HelpoQJsDMUU")
 CHANNEL_ID = "@SINIRSIZPDF2"  # Hedef kanalınız
 
-# Güvenlik ve Yetkilendirme Ayarları (ID sayısal olmalıdır!)
+# Güvenlik ve Yetkilendirme Ayarları
 BENIM_TELEGRAM_ID = 6787610448  
 GIZLI_SIFRE = "SINIRSIZPDF2735"
 
@@ -59,7 +59,7 @@ def background_loop():
         # Gönderim aralığı (300 saniye = 5 dakika)
         time.sleep(300)
 
-# Güvenlik Kontrollü /dehh Komutu (Başlatma ve Metin Güncelleme)
+# Güvenlik Kontrollü /dehh Komutu (Başlatma)
 @bot.message_handler(
     content_types=['text', 'photo'],
     func=lambda m: (m.text and m.text.startswith('/dehh')) or (m.caption and m.caption.startswith('/dehh'))
@@ -72,7 +72,7 @@ def start_command(message):
     user_id = message.from_user.id
     full_text = message.caption if message.caption else message.text
     
-    # Yetki Kontrolü (Sayısal ID Eşleşmesi)
+    # Yetki Kontrolü
     if user_id == BENIM_TELEGRAM_ID:
         yetki_onayli = True
     else:
@@ -84,39 +84,33 @@ def start_command(message):
 
     if not yetki_onayli:
         if full_text.strip() == '/dehh':
-            bot.send_message(message.chat.id, "🔒 Bu botu çalıştırmak için parola gerekiyor.\nKullanım: `/dehh parolaniz mesajiniz`")
+            bot.send_message(message.chat.id, "🔒 Bu botu çalıştırmak için parola gerekiyor.\nKullanım: `/dehh parolaniz`")
         else:
             bot.send_message(message.chat.id, "❌ Hatalı parola! Yetkisiz kullanım.")
         return
 
-    # Fotoğraf varsa file_id'sini kaydet
     if message.photo:
         current_photo_id = message.photo[-1].file_id
 
-    # 📌 YENİ METNİ YAKALAMA VE GÜNCELLEME KISMI
-    # Gönderilen metinden /dehh komutunu ve şifreyi ayıklayıp geriye kalan tasarımı/metni alıyoruz
-    parts = full_text.split(maxsplit=2)  # Örn: ['/dehh', 'SINIRSIZPDF2735', 'Mesajınız...']
-    
-    if user_id == BENIM_TELEGRAM_ID:
-        # Eğer yetkili sizseniz ve şifresiz direkt metin yazdıysanız (/dehh metin...)
-        if len(parts) > 1:
-            # Komuttan sonrasını al
-            clean_text = full_text.replace(parts[0], "", 1).strip()
-            if clean_text:
-                current_message_text = clean_text
-    else:
-        # Eğer şifre ile gönderildiyse (/dehh SINIRSIZPDF2735 metin...)
-        if len(parts) > 2:
-            # Şifreden sonrasını al
-            clean_text = full_text.replace(parts[0], "", 1).replace(parts[1], "", 1).strip()
-            if clean_text:
-                current_message_text = clean_text
+    # 📌 GÜVENLİ METİN GÜNCELLEME KISMI (Hata almayacak şekilde basitleştirildi)
+    parts = full_text.split(maxsplit=1)
+    if len(parts) > 1:
+        # Eğer siz yazdıysanız ve sadece '/dehh yeni metin' yaptıysanız
+        if user_id == BENIM_TELEGRAM_ID:
+            potential_text = parts[1].strip()
+            # Eğer şifreyle başlamıyorsa doğrudan metin kabul et
+            if potential_text:
+                current_message_text = potential_text
+        else:
+            # Başkası şifreyle yazdıysa: /dehh ŞİFRE yeni metin
+            sub_parts = full_text.split(maxsplit=2)
+            if len(sub_parts) > 2:
+                current_message_text = sub_parts[2].strip()
 
     with thread_lock:
         is_running = True
     
-    # DM'den onay mesajı gönder
-    bot.send_message(message.chat.id, "✅ Yetki onaylandı! Yeni metin hafızaya alındı, bot başlatıldı ve kanala gönderiliyor...")
+    bot.send_message(message.chat.id, "✅ Yetki onaylandı! Bot başlatıldı ve kanala test mesajı gönderiliyor...")
 
     # ANINDA KANALA GÖNDERME TESTİ
     try:
@@ -142,7 +136,7 @@ def stop_command(message):
             is_running = False
         bot.send_message(message.chat.id, "🛑 Bot durduruldu! Kanala otomatik gönderimler durduruldu.")
     else:
-        bot.send_message(message.chat.id, "❌ Eşleşmeyen ID, yetkiniz yok.")
+        bot.send_message(message.chat.id, "❌ Bu komutu kullanmaya yetkiniz yok.")
 
 # Güvenli Polling Başlatıcı
 def start_bot_polling():
