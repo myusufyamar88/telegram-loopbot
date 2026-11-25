@@ -1,8 +1,8 @@
 import os
 import threading
 import time
-import random  # 📌 Rastgele seçimler için gerekli kütüphane
-from datetime import datetime, timedelta
+import random
+from datetime import datetime, timezone, timedelta
 import telebot
 from flask import Flask
 
@@ -11,7 +11,7 @@ TOKEN = os.environ.get("BOT_TOKEN", "9032286572:AAH4-z-92Dx-gr1LX0Ka5Q4HelpoQJsD
 CHANNEL_ID = "@SINIRSIZPDF2"  # Hedef kanalınız
 
 # Güvenlik ve Yetkilendirme Ayarları
-BENIM_TELEGRAM_ID = 6787610448  
+BENIM_TELEGRAM_ID = 6787610448
 GIZLI_SIFRE = "SINIRSIZPDF2735"
 
 bot = telebot.TeleBot(TOKEN)
@@ -39,17 +39,14 @@ thread_lock = threading.Lock()
 def home():
     return "Bot aktif ve çalışıyor!"
 
-# 📌 Her gönderimde saatle birlikte tamamen rastgele karakter/emoji üreten fonksiyon
+# Her gönderimde saat ve rastgele sembol ekleyerek benzersiz metin üreten fonksiyon
 def get_final_message():
     with thread_lock:
         base_text = current_message_text
-    
-    # Türkiye saatine göre güncel saat (UTC+3)
-    turkey_time = datetime.utcnow() + timedelta(hours=3)
+
+    turkey_time = datetime.now(timezone.utc) + timedelta(hours=3)
     current_time_str = turkey_time.strftime("%H:%M")
-    
-    # Her seferinde spam filtresini kırmak için rastgele seçilecek gizli semboller/boşluk varyasyonları listesi
-    # (Görünmez veya şık varyasyonlar Telegram'ın kopyalama algoritmalarını tamamen şaşırtır)
+
     random_decorations = [
         "🔹",
         "▪️",
@@ -63,12 +60,11 @@ def get_final_message():
         "– ✦ –"
     ]
     chosen_dec = random.choice(random_decorations)
-    
-    # Mesajın en altına saat ve rastgele süsleme eklenir
+
     final_text = f"{base_text}\n\n<i>{chosen_dec} Güncelleme: {current_time_str} {chosen_dec}</i>"
     return final_text
 
-# Botu arka planda kanala mesaj gönderme döngüsü
+# Botun arka planda kanala mesaj gönderme döngüsü
 def background_loop():
     global is_running, current_photo_id
     while True:
@@ -86,7 +82,7 @@ def background_loop():
                 print("✅ Kanala periyodik benzersiz mesaj başarıyla gönderildi.")
             except Exception as e:
                 print(f"❌ Kanala gönderim hatası: {e}")
-        
+
         # Gönderim aralığı (300 saniye = 5 dakika)
         time.sleep(300)
 
@@ -97,12 +93,12 @@ def background_loop():
 )
 def start_command(message):
     print(f">>> [DEBUG] Telegram'dan komut yakalandı! Gönderen ID: {message.from_user.id}")
-    
+
     global is_running, current_message_text, current_photo_id
-    
+
     user_id = message.from_user.id
     full_text = message.caption if message.caption else message.text
-    
+
     # Yetki Kontrolü
     if user_id == BENIM_TELEGRAM_ID:
         yetki_onayli = True
@@ -137,7 +133,7 @@ def start_command(message):
 
     with thread_lock:
         is_running = True
-    
+
     bot.send_message(message.chat.id, "✅ Yetki onaylandı! Bot başlatıldı ve kanala test mesajı gönderiliyor...")
 
     # ANINDA KANALA GÖNDERME TESTİ
@@ -159,7 +155,7 @@ def start_command(message):
 def stop_command(message):
     global is_running
     user_id = message.from_user.id
-    
+
     if user_id == BENIM_TELEGRAM_ID:
         with thread_lock:
             is_running = False
@@ -167,21 +163,25 @@ def stop_command(message):
     else:
         bot.send_message(message.chat.id, "❌ Bu komutu kullanmaya yetkiniz yok.")
 
-# Güvenli Polling Başlatıcı
+# Güvenli ve Kendi Kendini Yeniden Başlatan Polling Başlatıcı
 def start_bot_polling():
-    try:
-        bot.remove_webhook()
-        time.sleep(1)
-        bot.infinity_polling(skip_pending=True)
-    except Exception as e:
-        print(f"Polling hatası: {e}")
+    print(">>> [DEBUG] start_bot_polling thread'i başlatıldı.")
+    while True:
+        try:
+            bot.remove_webhook()
+            time.sleep(1)
+            print(">>> [DEBUG] infinity_polling dinlemeye geçiyor...")
+            bot.infinity_polling(skip_pending=True, timeout=20, long_polling_timeout=15)
+        except Exception as e:
+            print(f"❌ [POLLING HATASI], 5 saniye sonra yeniden denenecek: {e}")
+            time.sleep(5)
 
 if __name__ == '__main__':
     t = threading.Thread(target=background_loop, daemon=True)
     t.start()
-    
+
     polling_thread = threading.Thread(target=start_bot_polling, daemon=True)
     polling_thread.start()
-    
+
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
